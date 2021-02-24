@@ -1,16 +1,11 @@
 import React, { Component } from 'react'
-import { Route } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Redirect, Route } from 'react-router-dom'
 import CheckoutSummary from '../../componets/Order/CheckoutSummary/CheckoutSummary'
-import Spinner from '../../componets/UI/Spinner/Spinner'
 import ContactData from './ContactData/ContactData'
+import * as orderCreators from '../../store/actions/index'
 
 class Checkout extends Component {
-    state = {
-        ingredients: null,
-        totalPrice: null
-    }
-
-
 
     checkoutCanceled = () => {
         console.log(this.props)
@@ -21,18 +16,10 @@ class Checkout extends Component {
         this.props.history.replace('/checkout/contact-data')
     }
 
-    componentWillMount() {
-        const query = new URLSearchParams(this.props.location.search)
-        console.log(query)
-        let ingredients = {}
-        for (let param of query) {
-            console.log(param)
-            param[0] !== 'totalPrice' ? (ingredients[param[0]] = +param[1]) : this.setState({ totalPrice: +param[1] });
-            // this.setState({ ingredients: Object.fromEntries(param[1].split(',').map(item => item.split('='))) })   MY ALTERNATIVE
-        }
-        this.setState({ ingredients: ingredients })
-        console.log(ingredients, this.state.totalPrice)
-    }
+   /*  componentWillMount() {
+        console.log('ok')
+        this.props.onInitOrder()
+    } */
 
     render() {
         /*  console.log(this.state.ingredients, this.state.totalPrice )
@@ -40,13 +27,35 @@ class Checkout extends Component {
          if (this.state.ingredients) {
              checkoutSummary = <CheckoutSummary checkoutSuccessed={this.checkoutSuccessed} checkoutCanceled={this.checkoutCanceled} ingredients={this.state.ingredients} />
          } */
-        return (
-            <div>
-                <CheckoutSummary checkoutSuccessed={this.checkoutSuccessed} checkoutCanceled={this.checkoutCanceled} ingredients={this.state.ingredients} />
-                <Route path={`${this.props.match.path}/contact-data`} render={(props) => (<ContactData {...props} ingredients={this.state.ingredients} price={this.state.totalPrice} />)} />
-            </div>
-        )
+        console.log(this.props.ordered)
+        let summary = <Redirect to="/" />
+        if (this.props.ingredients) {
+            const orderedRedirect = this.props.ordered ? <Redirect to="/" /> : null;
+            console.log(orderedRedirect)
+            summary = (
+                <div>
+                    {orderedRedirect}
+                    <CheckoutSummary checkoutSuccessed={this.checkoutSuccessed} checkoutCanceled={this.checkoutCanceled} ingredients={this.props.ingredients} />
+                    <Route path={`${this.props.match.path}/contact-data`} component={ContactData} />
+                </div>
+            )
+        }
+        return summary
     }
 }
 
-export default Checkout
+const mapStateToProps = state => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        ordered: state.order.ordered,
+    }
+}
+
+/* const mapDispatchToProps = dispatch => {
+    return {
+        onInitOrder: () => { dispatch(orderCreators.makeOrderInit()) }
+    }
+} */
+
+export default connect(mapStateToProps /* mapDispatchToProps */)(Checkout)

@@ -4,6 +4,9 @@ import classes from './ContactData.css'
 import instance from '../../../axios-orders'
 import Spinner from '../../../componets/UI/Spinner/Spinner'
 import Input from '../../../componets/UI/Input/Input'
+import * as orderCreators from '../../../store/actions/index'
+import { connect } from 'react-redux'
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
 
 class ContactData extends Component {
 
@@ -84,7 +87,7 @@ class ContactData extends Component {
                         { value: 'cheapest', displayValue: 'Cheapest' },
                     ]
                 },
-                value: '',
+                value: 'fastest',
                 validation: {
                     required: false
                 },
@@ -92,13 +95,12 @@ class ContactData extends Component {
                 touched: false
             }
         },
-        formIsValid: false,
-        loading: false
+        formIsValid: false
     }
 
     orderHandler = (e) => {
         e.preventDefault()
-        this.setState({ loading: true })
+        /* this.setState({ loading: true }) */
         const formData = {};
         for (let formElementIdentifier in this.state.OrderForm) {
             formData[formElementIdentifier] = this.state.OrderForm[formElementIdentifier].value;
@@ -109,14 +111,11 @@ class ContactData extends Component {
         }
         const order = {
             ingredients: this.props.ingredients,
-            price: this.props.price,
+            price: this.props.totalPrice,
             orderData: formData
-
         }
-        instance.post('/order.json', order).then(response => {
-            this.props.history.push('/');
-            this.setState({ loading: false/* , showModal: false */ })
-        }).catch(error => this.setState({ loading: false/* , showModal: false  */ }))
+
+        this.props.onMakeOrder(order)
     }
 
     checkValidity = (value, rules) => {
@@ -140,8 +139,8 @@ class ContactData extends Component {
         updatedForm[item] = updatedFormElement
         console.log(updatedForm)
         const valid = Object.values(updatedForm).every(item => item.valid)
-       
-      /*   console.log(this.state.formIsValid) */
+
+        /*   console.log(this.state.formIsValid) */
         // const ValueArray = Object.entries(formUpdated).filter(el => el[0] === item /* && (el[1].value = e.target.value) */);
         // const ValueArrayUpdated = [...ValueArray]
         // ValueArrayUpdated.map(item => item[1].value = e.target.value)
@@ -162,7 +161,7 @@ class ContactData extends Component {
             </form>
 
         );
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />
         }
         return (
@@ -173,4 +172,18 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData
+const mapStateToProps = state => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        loading: state.order.loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onMakeOrder: (orderData) => { dispatch(orderCreators.makeOrder(orderData)) }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, instance) )
