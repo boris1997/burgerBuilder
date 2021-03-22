@@ -40,12 +40,13 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount() {
-
+        console.log('ok')
         this.props.onFetchIngredients()
 
     }
 
     render() {
+        console.log('ok')
         const disabledInfo = {
             ...this.props.ingredients
         }
@@ -78,7 +79,7 @@ class BurgerBuilder extends Component {
                 continue={this.purchaseContinueHandler}
                 modalClosed={this.purchaseCancelHandler}
                 ingredients={this.props.ingredients} />
-                
+
         }
 
         if (this.state.loading) {
@@ -89,7 +90,7 @@ class BurgerBuilder extends Component {
         return (
 
             <Auxilary>
-                <Modal show={this.state.showModal} btnStatus={orderBtnStatus}  modalClosed={this.purchaseCancelHandler} > {/* {(this.state.showModal && !orderBtnStatus) && <OrderSummary ingredients={this.state.ingredients} />} */}
+                <Modal show={this.state.showModal} btnStatus={orderBtnStatus} modalClosed={this.purchaseCancelHandler} > {/* {(this.state.showModal && !orderBtnStatus) && <OrderSummary ingredients={this.state.ingredients} />} */}
                     {orderSummary}
                 </Modal>
                 {burger}

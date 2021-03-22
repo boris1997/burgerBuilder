@@ -10,6 +10,11 @@ const Order = (props) => {
             <p> meat ({props.ingredients.meat})</p>
             <p> bacon ({props.ingredients.bacon})</p>
             <p>Price:  ({props.price})</p>
+            Customer:
+            <p>country: ({props.customer.country}) </p>
+            <p></p>
+            <p></p>
+            <p></p>
         </div>
     )
 }

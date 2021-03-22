@@ -11,15 +11,15 @@ class Orders extends Component {
         loading: true
     }
     componentDidMount() {
-                console.log('mounted')
-                this.props.onGetOrder()
+        console.log(this.props)
+        this.props.onGetOrder(this.props.token)
     }
     render() {
         let order = <Spinner />
         console.log(this.props.orders)
-        if (!this.props.loading && this.props.orders) {
-            console.log(this.props.orders)
-            order = Object.entries(this.props.orders).map(item => <Order key={item[0]} customer={item[1].customer} ingredients={item[1].ingredients} price={item[1].price} />)
+        if (!this.props.loading /* && this.props.orders */) {
+            order = Object.entries(this.props.orders).map(item => <Order key={item[0]} customer={item[1].orderData} ingredients={item[1].ingredients} price={item[1].price} />)
+            console.log(order)
         }
 
         return (
@@ -35,13 +35,14 @@ const mapStateToProps = state => {
     console.log(state)
     return {
         orders: state.order.orders,
-        loading: state.order.loading
+        loading: state.order.loading,
+        token: state.auth.token
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onGetOrder: () => { dispatch(orderCreators.getOrder()) }
+        onGetOrder: (token) => { dispatch(orderCreators.getOrder(token)) }
     }
 }
 

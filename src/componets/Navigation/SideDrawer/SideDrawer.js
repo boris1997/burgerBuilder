@@ -10,7 +10,6 @@ const SideDrawer = (props) => {
 
     let attachedClasses = [classes.SideDrawer, classes.Close]
     if (props.SideDrawerStatus) {
-        console.log('ok')
         attachedClasses = [classes.SideDrawer, classes.Open]
     }
     console.log(attachedClasses, props)

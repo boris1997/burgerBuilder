@@ -1,17 +1,33 @@
 import instance from "../../axios-orders"
 import * as actionTypes from '../actions/actionTypes'
 
-export const getOrder = () => {
+export const getOrder = (token) => {
     return (dispatch) => {
-        instance.get('/order.json')
+        dispatch(getOrderStart())
+        console.log(token)
+        instance.get(`/order.json?auth=${token}`)
             .then(res => {
                 console.log(res)
-                dispatch({ type: actionTypes.GET_ORDER, order: res.data })
+                dispatch(getOrderSuccess(res.data))
+
             })
-            .catch(err =>
-                dispatch({ type: actionTypes.SHOW_LOAD, error: false })
-            )
+            .catch(err => {
+                dispatch(getOrderFailed(err))
+
+            })
     }
+}
+
+export const getOrderStart = () => {
+    return ({ type: actionTypes.GET_ORDER_START })
+}
+
+export const getOrderSuccess = (data) => {
+    return ({ type: actionTypes.GET_ORDER_SUCCESS, order: data })
+}
+
+export const getOrderFailed = (err) => {
+    return ({ type: actionTypes.GET_ORDER_FAILED })
 }
 
 export const makeOrderStart = () => {

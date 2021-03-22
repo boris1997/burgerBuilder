@@ -8,9 +8,10 @@ const Input = (props) => {
     console.log(props) */
     const inputClasses = [classes.Input];
 
-    if (!props.valid && props.shouldValidate && props.touched){
+    if (!props.valid && props.shouldValidate && props.touched) {
         inputClasses.push(classes.Invalid)
     }
+    console.log(props)
     switch (props.elementType) {
         case ('input'):
             inputElement = <input className={inputClasses.join(' ')} {...props.elementConfig} value={props.value} onChange={props.changedInput} />;
